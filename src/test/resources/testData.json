@@ -1,0 +1,37 @@
+{
+  "browser": "chrome",
+  "baseUrl": "https://vk.com",
+  "tempCredentials": {
+    "userId": "769128604",
+    "phone": "+48692931970",
+    "password": "eUaaUajIJZRAFBcYX487",
+    "token": "vk1.a.nFb-WBtOktUx-cVhEPmLrXi1_gJySWNkiFAMnU4yryfW6xeDNVgEKfAt3tsYz9FhcYyZ0LKZgqW33ajy04du8r2lXgbdX5UrBWP2iNd0AKw7qdgiiShT8jlJf8ihNWaBv5NFdqxo338dEqzDwNEeVOdqp6G26wJ_tf_XJjmK4lTEvSaubBEO44QcRDo_b0Oablcv5P-rhHW4b7zS9CE-Vw"
+  },
+  "credentials": {
+    "userId": "627657327",
+    "phone": "++375291660762",
+    "password": "PuV6j_.2&$m9h?UYY",
+    "token": "vk1.a.J1Ybf_EPrjsm35UDkJodVgZ7hagfcfGlPlzvXPY85MLZF8uU9RxYAH07WZ3EU2Td3aA9tZ3BxQlm91l17X--FFKNZ7hVMzEha6teELN_YFq9VMetXrOSwYpT1dcEqXpFWXFTNS_lIaFV2Y92SJQIUi8t36u7fuiLMrT3VXF2rL5cA0h80ur7f5dDJBvWNdJytVqBw4wrZ38sB_OCH4n7KA"
+  },
+  "requestsConfigParams": {
+    "vkRequestsVersion": 5.21
+  },
+  "originalPostData": {
+    "author": "Ivan Ivanov",
+    "message": "quack!"
+  },
+  "editedPostData": {
+    "author": "Ivan Ivanov",
+    "message": "Q U A C K",
+    "attachment": {
+      "type": "photo",
+      "ownerId": -112428850,
+      "mediaId": 457249412
+    }
+  },
+  "apiRequests": {
+    "postOnWall": "https://api.vk.com/method/wall.post?&owner_id=%d&access_token=%s",
+    "commentPostOnWall": "https://api.vk.com/method/wall.createComment?post_id=%s&owner_id=%d&access_token=%s",
+    "editPost": "https://api.vk.com/method/wall.edit?post_id=%d&owner_id=%d&access_token=%s"
+  }
+}

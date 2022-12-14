@@ -1,0 +1,19 @@
+### project files ###
+*temp*
+src/test/resources/testData.local.json
+
+### target ###
+target/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+/.idea/
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/

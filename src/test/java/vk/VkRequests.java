@@ -1,5 +1,7 @@
 package vk;
 
+import kong.unirest.HttpResponse;
+import vk.model.CommentData;
 import vk.model.Credentials;
 import vk.model.PostData;
 import vk.model.Response;
@@ -17,34 +19,44 @@ public class VkRequests {
         return request + "&v=" + versionParameter;
     }
 
-    public static <T> Response<T> postOnWall(PostData postData, Credentials credentials){
+    public static String postOnWall(int ownerId, PostData postData, String token){
         String request = getVkRequest("postOnWall");
-        String formattedRequest = String.format(request, credentials.getUserId(), credentials.getToken());
+        String formattedRequest = String.format(request, ownerId, token);
         if (postData.getMessage() != null){
             formattedRequest += "&message=" + postData.getMessage();
         }
         if (postData.getAttachment() != null){
-            formattedRequest += "&attachments=" + postData.getAttachmentParameter();
+            formattedRequest += "&attachments=" + postData.getAttachment().getAsParameter();
         }
         return RestApiRequests.post(formattedRequest);
     }
 
-    public static <T> Response<T> commentPostOnWall(Long postId, String message, Credentials credentials){
-        String request = getVkRequest("postMessageOnWall");
-        String formattedRequest = String.format(request, postId, message, credentials.getUserId(), credentials.getToken());
+    public static String postCommentOnWall(int ownerId, CommentData commentData, String token){
+        String request = getVkRequest("commentPostOnWall");
+        String formattedRequest = String.format(request, commentData.getTargetPostId(), ownerId, token);
+        if (commentData.getMessage() != null){
+            formattedRequest += "&message=" + commentData.getMessage();
+        }
+        if (commentData.getAttachment() != null){
+            formattedRequest += "&attachments=" + commentData.getAttachment().getAsParameter();
+        }
         return RestApiRequests.post(formattedRequest);
     }
 
-    public static <T> Response<T> editPost(PostData postData, Credentials credentials){
+    public static String editPost(int ownerId, PostData postData, String token){
         String request = getVkRequest("editPost");
-        String formattedRequest = String.format(request, postData.getId(), credentials.getUserId(), credentials.getToken());
+        String formattedRequest = String.format(request, postData.getId(), ownerId, token);
 
         if (postData.getMessage() != null){
             formattedRequest += "&message=" + postData.getMessage();
         }
         if (postData.getAttachment() != null){
-            formattedRequest += "&attachments=" + postData.getAttachmentParameter();
+            formattedRequest += "&attachments=" + postData.getAttachment().getAsParameter();
         }
         return RestApiRequests.post(formattedRequest);
+    }
+
+    public static String likePost(){
+        return null;
     }
 }

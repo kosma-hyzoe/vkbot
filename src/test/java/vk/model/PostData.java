@@ -5,32 +5,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class PostData {
+    @Getter
     @Setter
+    private int id;
     @Getter
-    private Long id;
-    @Getter
+    @Setter
     @JsonProperty
-    private String author;
+    private int ownerId;
     @Getter
     @JsonProperty
     private String message;
     @Getter
     @JsonProperty
     private Attachment attachment;
-
-    public String getAttachmentParameter(){
-        return String.format("%s%d_%d", attachment.getType(), attachment.getOwnerId(), attachment.getMediaId());
-    }
-
-    public static class Attachment{
-        @Getter
-        @JsonProperty
-        private String type;
-        @Getter
-        @JsonProperty
-        private Long ownerId;
-        @Getter
-        @JsonProperty
-        private Long mediaId;
-    }
 }

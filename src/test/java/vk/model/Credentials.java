@@ -6,7 +6,7 @@ import lombok.Getter;
 public class Credentials {
     @Getter
     @JsonProperty
-    private Long userId;
+    private int userId;
     @Getter
     @JsonProperty
     private String phone;

@@ -8,19 +8,25 @@ import org.testng.annotations.*;
 import vk.form.FeedPage;
 import vk.form.MyProfilePage;
 import vk.form.SignInForm;
+import vk.model.CommentData;
 import vk.model.Credentials;
 import vk.model.PostData;
 import vk.model.Response;
+import vk.util.RestApiRequests;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 import static org.testng.Assert.assertTrue;
 import static vk.util.Serialization.deserialize;
 import static vk.util.Serialization.getJsonNode;
 
 public class VkTest {
-    private VkTest(){}
+    private VkTest() {
+    }
+
     public static final Logger logger = AqualityServices.getLogger();
     private static String testData;
     private static Browser browser;
@@ -31,9 +37,10 @@ public class VkTest {
     }
 
     @Test
-    public void vkTest(){
+    public void vkTest() {
         String baseUrl = getTestData().get("baseUrl").asText();
         browser.goTo(baseUrl);
+        browser.maximize();
 
         SignInForm signInForm = new SignInForm();
         signInForm.signIn(credentials);
@@ -41,24 +48,32 @@ public class VkTest {
         FeedPage feed = new FeedPage();
         feed.goToMyProfile();
 
-        MyProfilePage myProfilePage = new MyProfilePage();
+        MyProfilePage myProfilePage = new MyProfilePage(credentials.getUserId());
+        myProfilePage.acceptCookies();
+
         PostData originalPostData = deserialize(getTestData().get("originalPostData").toString(), PostData.class);
-        Response<Object> postMessageOnWalResponse = VkRequests.postOnWall(originalPostData, credentials);
-
-        String responseBody = postMessageOnWalResponse.getBodyAsString();
-        Long postId = getJsonNode(responseBody).get("response").get("post_id").asLong();
+        String postOnWallResponseBody = VkRequests.postOnWall(myProfilePage.getOwnerId(), originalPostData,
+                credentials.getToken());
+        int postId = getJsonNode(postOnWallResponseBody).get("response").get("post_id").asInt();
         originalPostData.setId(postId);
-
         assertTrue(myProfilePage.isPostDisplayed(originalPostData), "failed to have the post displayed");
 
         PostData editedPostData = deserialize(getTestData().get("editedPostData").toString(), PostData.class);
         editedPostData.setId(postId);
-        VkRequests.editPost(editedPostData, credentials);
-        assertTrue(myProfilePage.isPostDisplayed(editedPostData), "failed to have the edited post displayed");
+
+        VkRequests.editPost(myProfilePage.getOwnerId(), editedPostData, credentials.getToken());
+        assertTrue(myProfilePage.isPostDisplayed(editedPostData), "failed to display the edited post");
 
 
+        String commentMessage = getTestData().get("postCommentMessage").asText();
+        CommentData comment = new CommentData(postId, credentials.getUserId(), commentMessage);
 
-
+        String postCommentOnWallResponseBody = VkRequests.postCommentOnWall(myProfilePage.getOwnerId(), comment,
+                credentials.getToken());
+        int commentId = getJsonNode(postCommentOnWallResponseBody).get("response").get("comment_id").asInt();
+        comment.setId(commentId);
+        myProfilePage.showNextCommentOnPost(editedPostData.getId());
+        assertTrue(myProfilePage.isCommentDisplayed(comment), "failed to have the comment displayed");
 
     }
 
@@ -78,6 +93,7 @@ public class VkTest {
 
     @AfterMethod
     public void tearDown() {
+        RestApiRequests.shutDownUnirest();
         browser.quit();
     }
 

@@ -45,8 +45,8 @@
     "message": "bar",
     "attachment": {
       "type": "photo",
-      "ownerId": 769128604,
-      "mediaId": 457239017
+      "ownerId": null,
+      "mediaId": null
     }
   },
   "postCommentMessage": "foobar"

@@ -1,6 +1,7 @@
 ### project files ###
 *temp*
 src/test/resources/testData.local.json
+src/test/resources/settings.local.json
 
 ### target ###
 target/

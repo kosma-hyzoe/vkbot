@@ -1,16 +1,19 @@
 {
-  "browser": "chrome",
   "baseUrl": "https://vk.com",
   "credentials": {
-    "userId": "769128604",
-    "phone": "+48692931970",
-    "password": "eUaaUajIJZRAFBcYX487",
-    "token": "vk1.a.MeKpJmPfgHkp2HXUCvlM9_lWPSb_QHyyowtVWaOH07E2jp3yAjAvaVPijC4Fj1TfUzraMX3A8RKrQj1UsZbUVilfYJKJOGDGean05aEUGFeUhsF4bKgHcQLTIo_ZXqQCINMRoKZYMwn2bIOhC4SUvbE9agXYHd7RPDnu47Ex7KibqEr0utQQOZJnr2DTfdIiwxScNsDONDaK4a8DcB8Sjw"
+    "userId": null,
+    "phone": null,
+    "password": null,
+    "token": null
   },
-  "requestsConfigParams": {
+  "vkRequestsConfig": {
     "vkRequestsVersion": 5.21
   },
   "waits": {
+    "myProfileClickable": {
+      "seconds": 2,
+      "milliseconds": 0
+    },
     "acceptCookiesClickable": {
        "seconds": 2,
       "milliseconds": 0
@@ -20,7 +23,7 @@
       "milliseconds": 0
     },
     "nextCommentClickable": {
-      "seconds": 5,
+      "seconds": 3,
       "milliseconds": 0
     },
     "likeCountChange": {
@@ -28,7 +31,7 @@
       "milliseconds": 0
     }
   },
-  "apiRequests": {
+  "vkRequests": {
     "postOnWall": "https://api.vk.com/method/wall.post?&owner_id=%d&access_token=%s",
     "commentPostOnWall": "https://api.vk.com/method/wall.createComment?post_id=%s&owner_id=%d&access_token=%s",
     "editPost": "https://api.vk.com/method/wall.edit?post_id=%d&owner_id=%d&access_token=%s",

@@ -5,14 +5,13 @@ import vk.model.CommentData;
 import vk.model.PostData;
 
 import static vk.VkTest.getTestData;
-import static vk.util.Serialization.getApiRequest;
 
 public class VkRequests {
     private VkRequests(){}
 
     private static String getVkRequest(String testDataKey){
-        String request = getApiRequest(testDataKey);
-        String versionParameter = getTestData().get("requestsConfigParams").get("vkRequestsVersion").asText();
+        String request = getTestData().get("vkRequests").get(testDataKey).asText();
+        String versionParameter = getTestData().get("vkRequestsConfig").get("apiVersion").asText();
         return request + "&v=" + versionParameter;
     }
 
@@ -29,7 +28,7 @@ public class VkRequests {
         return new VkResponse(unirestResponse);
     }
 
-    public static VkResponse postCommentOnWall(CommentData commentData, String token){
+    public static VkResponse createCommentOnWall(CommentData commentData, String token){
         String request = getVkRequest("commentPostOnWall");
         String formattedRequest = String.format(request, commentData.getTargetPostId(), commentData.getOwnerId(), token);
         if (commentData.getMessage() != null){
@@ -41,7 +40,6 @@ public class VkRequests {
         HttpResponse<String> unirestResponse = RestApiRequests.post(formattedRequest);
         return new VkResponse(unirestResponse);
     }
-
     public static VkResponse editPost(PostData updatedPostData, String token){
         String request = getVkRequest("editPost");
         String formattedRequest = String.format(request, updatedPostData.getId(), updatedPostData.getOwnerId(), token);

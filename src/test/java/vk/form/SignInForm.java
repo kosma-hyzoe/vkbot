@@ -11,11 +11,11 @@ public class SignInForm extends Form {
     private final ITextBox phoneOrEmailInputField = AqualityServices.getElementFactory().getTextBox(
         By.id("index_email"), "Phone or email");
     private final IButton signInButton = AqualityServices.getElementFactory().getButton(
-            By.xpath("//span[contains(text(),\"Sign in\")]"), "Sign in");
+            By.xpath("//span[contains(text(),'Sign in')]"), "Sign in");
     private final ITextBox passwordInputField = AqualityServices.getElementFactory().getTextBox(
-            By.xpath("//input[@name=\"password\"]"), "Enter password");
+            By.xpath("//input[@name='password']"), "Enter password");
     private  final IButton continueButton = AqualityServices.getElementFactory().getButton(
-            By.xpath("//span[text()=\"Continue\"]"), "Continue");
+            By.xpath("//span[text()='Continue']"), "Continue");
 
 
     public SignInForm() {

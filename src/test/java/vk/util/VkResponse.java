@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static vk.util.Serialization.getJsonNode;
 
 
-public class VkResponse{
+public class VkResponse {
     @Getter
     private final String body;
     @Getter
@@ -20,23 +20,22 @@ public class VkResponse{
         this.responseCode = httpResponse.getStatus();
     }
 
-    public int getItemId(String itemType){
-        JsonNode responseContent =  getJsonNode(getBody()).get("response");
+    public int getItemId(String itemType) {
+        JsonNode responseContent = getJsonNode(getBody()).get("response");
         return responseContent.get(itemType + "_id").asInt();
     }
 
-    public ArrayList<Integer> getItemIdList(){
-        ArrayList<Integer> items = new ArrayList<>();
+    public ArrayList<Integer> getItemIdsList() {
+        ArrayList<Integer> itemIds = new ArrayList<>();
         JsonNode nodeItems = getJsonNode(getBody()).get("response").get("items");
         for (int i = 0; i < nodeItems.size(); i++) {
             int id = nodeItems.get(i).asInt();
-            items.add(id);
+            itemIds.add(id);
         }
-        return items;
+        return itemIds;
     }
 
-
-    public JsonNode getError(){
+    public JsonNode getError() {
         return getJsonNode(getBody()).get("error");
     }
 }

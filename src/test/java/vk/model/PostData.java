@@ -17,10 +17,6 @@ public class PostData {
     @JsonProperty
     private int ownerId;
     @Getter
-    @Setter
-    @JsonProperty
-    private int authorId;
-    @Getter
     @JsonProperty
     private String message;
     @Getter
@@ -35,7 +31,7 @@ public class PostData {
 
     public boolean isUserIdInPostLikes(int userId, String token){
         VkResponse getListOfLikesResponse = VkRequests.getLikesList("post", id, getOwnerId(), token);
-        ArrayList<Integer> listOfLikersIds = getListOfLikesResponse.getItemIdList();
+        ArrayList<Integer> listOfLikersIds = getListOfLikesResponse.getItemIdsList();
         for (int likerId : listOfLikersIds){
             if (likerId == userId){
                 return true;

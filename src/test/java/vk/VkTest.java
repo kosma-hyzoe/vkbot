@@ -11,14 +11,14 @@ import vk.form.SignInForm;
 import vk.model.CommentData;
 import vk.model.Credentials;
 import vk.model.PostData;
-import vk.model.Response;
 import vk.util.RestApiRequests;
+import vk.util.VkRequests;
+import vk.util.VkResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.util.concurrent.TimeoutException;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static vk.util.Serialization.deserialize;
 import static vk.util.Serialization.getJsonNode;
@@ -51,29 +51,35 @@ public class VkTest {
         MyProfilePage myProfilePage = new MyProfilePage(credentials.getUserId());
         myProfilePage.acceptCookies();
 
-        PostData originalPostData = deserialize(getTestData().get("originalPostData").toString(), PostData.class);
-        String postOnWallResponseBody = VkRequests.postOnWall(myProfilePage.getOwnerId(), originalPostData,
-                credentials.getToken());
-        int postId = getJsonNode(postOnWallResponseBody).get("response").get("post_id").asInt();
-        originalPostData.setId(postId);
-        assertTrue(myProfilePage.isPostDisplayed(originalPostData), "failed to have the post displayed");
+        PostData postData = deserialize(getTestData().get("postData").toString(), PostData.class);
+        postData.setOwnerId(credentials.getUserId());
+        VkResponse postOnWallResponse = VkRequests.postOnWall(postData, credentials.getToken());
 
-        PostData editedPostData = deserialize(getTestData().get("editedPostData").toString(), PostData.class);
-        editedPostData.setId(postId);
+        int postId = postOnWallResponse.getItemId("post");
+        postData.setId(postId);
+        assertTrue(myProfilePage.isPostDisplayed(postData), "failed to have the post displayed");
 
-        VkRequests.editPost(myProfilePage.getOwnerId(), editedPostData, credentials.getToken());
+        PostData postEditionData = deserialize(getTestData().get("postEditionData").toString(), PostData.class);
+        PostData editedPostData = postData.getEditedCopy(postEditionData);
+
+        VkRequests.editPost(editedPostData, credentials.getToken());
         assertTrue(myProfilePage.isPostDisplayed(editedPostData), "failed to display the edited post");
-
 
         String commentMessage = getTestData().get("postCommentMessage").asText();
         CommentData comment = new CommentData(postId, credentials.getUserId(), commentMessage);
+        comment.setOwnerId(credentials.getUserId());
 
-        String postCommentOnWallResponseBody = VkRequests.postCommentOnWall(myProfilePage.getOwnerId(), comment,
-                credentials.getToken());
-        int commentId = getJsonNode(postCommentOnWallResponseBody).get("response").get("comment_id").asInt();
+        VkResponse postCommentOnWallResponse = VkRequests.postCommentOnWall(comment, credentials.getToken());
+        int commentId = postCommentOnWallResponse.getItemId("comment");
         comment.setId(commentId);
-        myProfilePage.showNextCommentOnPost(editedPostData.getId());
+        myProfilePage.showNextCommentOnPost(postId);
         assertTrue(myProfilePage.isCommentDisplayed(comment), "failed to have the comment displayed");
+
+        myProfilePage.likePost(postId);
+        // assertTrue(editedPostData.isUserIdInPostLikes(credentials.getUserId(), credentials.getToken()));
+
+        VkRequests.deletePost(credentials.getUserId(), postId, credentials.getToken());
+        assertFalse(myProfilePage.isPostDisplayed(postId));
 
     }
 
@@ -96,5 +102,4 @@ public class VkTest {
         RestApiRequests.shutDownUnirest();
         browser.quit();
     }
-
 }

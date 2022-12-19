@@ -7,8 +7,7 @@ import aquality.selenium.elements.interfaces.ITextBox;
 import aquality.selenium.forms.Form;
 import lombok.Getter;
 import org.openqa.selenium.By;
-import vk.model.CommentData;
-import vk.model.PostData;
+import vk.model.Content;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -47,37 +46,37 @@ public class MyProfilePage extends Form {
         return post.state().isDisplayed();
     }
 
-    public boolean isPostDisplayed(PostData postData) {
-        if (postData.getAttachment() == null && postData.getMessage() == null) {
+    public boolean isPostDisplayed(int postId, Content content) {
+        if (content.getAttachment() == null && content.getMessage() == null) {
             AqualityServices.getLogger().warn("empty post fields when checking if its displayed - returning false...");
             return false;
         }
-        if (postData.getMessage() != null) {
+        if (content.getMessage() != null) {
             String rawXpath = "//div[@id='wpt%d_%d']/div[text()='%s']";
-            String xpath = String.format(rawXpath, ownerId, postData.getId(), postData.getMessage());
+            String xpath = String.format(rawXpath, ownerId, postId, content.getMessage());
             ITextBox postMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(xpath),
-                    "post message: '" + postData.getMessage() + "' @ id=" + postData.getId());
+                    "post message: '" + content.getMessage() + "' @ id=" + postId);
             try {
                 AqualityServices.getConditionalWait().waitForTrue(() -> postMessage.state().isDisplayed(),
                         Duration.ofSeconds(getTestData().get("waits").get("postDisplay").get("seconds").asInt()),
                         Duration.ofMillis(getTestData().get("waits").get("postDisplay").get("milliseconds").asInt()),
-                        "there should be displayed a post message: " + postData.getMessage());
+                        "there should be displayed a post message: " + content.getMessage());
             } catch (TimeoutException e) {
                 AqualityServices.getLogger().info("timeout: failed to display the message within the post");
                 return false;
             }
         }
-        if (postData.getAttachment() != null) {
-            if (!Objects.equals(postData.getAttachment().getType(), "photo")) {
+        if (content.getAttachment() != null) {
+            if (!Objects.equals(content.getAttachment().getType(), "photo")) {
                 AqualityServices.getLogger().error("unsupported attachment type");
                 return false;
             }
 
             String rawXpath = "//div[@id='wpt%d_%d']/div/a[@href='/photo%d_%d']";
-            String xpath = String.format(rawXpath, ownerId, postData.getId(), postData.getAttachment().getOwnerId(),
-                    postData.getAttachment().getMediaId());
+            String xpath = String.format(rawXpath, ownerId, postId, content.getAttachment().getOwnerId(),
+                    content.getAttachment().getMediaId());
             ILabel postAttachment = AqualityServices.getElementFactory().getLabel(By.xpath(xpath),
-                    "post attachment with request parameter: " + postData.getAttachment().getAsParameter());
+                    "post attachment with request parameter: " + content.getAttachment().getAsParameter());
             try {
                 AqualityServices.getConditionalWait().waitForTrue(() -> postAttachment.state().isDisplayed(),
                         Duration.ofSeconds(getTestData().get("waits").get("postDisplay").get("seconds").asInt()),
@@ -107,14 +106,14 @@ public class MyProfilePage extends Form {
         showNextComment.click();
     }
 
-    public Boolean isCommentMessageDisplayed(CommentData comment) {
-        if (comment.getMessage() == null) {
+    public Boolean isCommentMessageDisplayed(int postId, Content content) {
+        if (content.getMessage() == null) {
             AqualityServices.getLogger().warn("empty message field  - returning false");
             return false;
         }
 
         String rawXpath = "//div[@id='post%d_%d' and @data-answering-id='%d']//div[@class='wall_reply_text' and text()='%s']";
-        String xpath = String.format(rawXpath, ownerId, comment.getId(), comment.getAuthorId(), comment.getMessage());
+        String xpath = String.format(rawXpath, ownerId, postId, ownerId, content.getMessage());
         ITextBox commentMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(xpath), "comment message");
         try {
             AqualityServices.getConditionalWait().waitForTrue(() -> commentMessage.state().isDisplayed(),

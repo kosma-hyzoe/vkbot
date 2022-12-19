@@ -15,8 +15,7 @@ public class Serialization {
         try {
             return Serialization.jacksonObjectMapper.readValue(string, T);
         } catch (JsonProcessingException e) {
-            logger.error(String.format("Failed to deserialize object \"%s\"  from string \"%s\"\n\t",
-                    T, string) + e.getMessage());
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -25,7 +24,7 @@ public class Serialization {
         try {
             return jacksonObjectMapper.readTree(string);
         } catch (JsonProcessingException e){
-            logger.error("Failed to parse string '" + string + "':\n\t" + e.getMessage());
+            logger.error(e.getMessage());
             return null;
         }
     }

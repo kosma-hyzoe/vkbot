@@ -22,7 +22,7 @@ public class FeedPage extends Form {
         try {
                 AqualityServices.getConditionalWait().waitForTrue(() -> myProfile.state().isClickable(),
                         Duration.ofSeconds(getTestData().get("waits").get("myProfileClickable").get("seconds").asInt()),
-                        Duration.ofMillis(getTestData().get("waits").get("myProfileClickable").get("milliseconds").asInt()),
+                        Duration.ofMillis(getTestData().get("waits").get("myProfileClickable").get("millis").asInt()),
                         "'My profile' link should be clickable");
             } catch (TimeoutException e) {
                 AqualityServices.getLogger().error("timeout: 'My profile' is still not clickable");

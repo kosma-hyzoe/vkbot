@@ -7,12 +7,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.annotations.*;
 import vk.form.FeedPage;
 import vk.form.MyProfilePage;
+import vk.form.PostForm;
 import vk.form.SignInForm;
 import vk.model.Content;
 import vk.model.Credentials;
 import vk.util.RestApiRequests;
 import vk.util.VkRequests;
-import vk.util.VkResponse;
+import vk.model.VkResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,36 +48,37 @@ public class VkTest {
         MyProfilePage myProfilePage = new MyProfilePage(credentials.getUserId());
         myProfilePage.acceptCookies();
 
-        Content post = deserialize(getTestData().get("content").get("post").toString(), Content.class);
+        Content postContent = deserialize(getTestData().get("content").get("post").toString(), Content.class);
 
         logger.info("attempting to post a post on a wall via API, expecting it to display in the UI");
-        VkResponse wallPostResponse = VkRequests.wallPost(post);
+        VkResponse wallPostResponse = VkRequests.wallPost(postContent);
         int postId = wallPostResponse.getBody("post");
-        assertTrue(myProfilePage.isPostDisplayed(postId), "failed to display the post");
+        PostForm post = new PostForm(credentials.getUserId(), postId);
+        assertTrue(post.state().isDisplayed(), "failed to display the post");
 
-        Content postEdit = deserialize(getTestData().get("content").get("postEdit").toString(), Content.class);
+        Content postEditContent = deserialize(getTestData().get("content").get("postEdit").toString(), Content.class);
 
         logger.info("attempting to edit the post via API, expecting the changes to be displayed in the UI");
-        VkRequests.wallEditPost(postId, postEdit);
-        assertTrue(myProfilePage.isPostDisplayed(postId ,postEdit), "failed to display the post changes");
+        VkRequests.wallEditPost(postId, postEditContent);
+        assertTrue(post.isDisplayed(postEditContent), "failed to display post changes");
 
         Content comment = deserialize(getTestData().get("content").get("comment").toString(), Content.class);
 
         logger.info("attempting to create a comment under the post via API, expecting it to display in the UI");
         VkResponse wallCreateCommentResponse = VkRequests.wallCreateComment(postId, comment);
         int commentId = wallCreateCommentResponse.getBody("comment");
-        myProfilePage.showNextCommentOnPost(postId);
-        assertTrue(myProfilePage.isCommentMessageDisplayed(commentId, comment), "failed to display the comment");
+        post.showNextComment();
+        assertTrue(post.isCommentMessageDisplayed(commentId, comment.getMessage()), "failed to display the comment");
 
         logger.info("attempting to like post via UI, expecting the user id to appear in likes list requested via API");
-        myProfilePage.likePost(postId);
-        VkResponse likesIsLikedResponse = VkRequests.likesIsLiked(myProfilePage.getOwnerId(), postId, "post");
+        post.likePost();
+        VkResponse likesIsLikedResponse = VkRequests.likesIsLiked(post.getOwnerId(), postId, "post");
         boolean isLiked = likesIsLikedResponse.getBody();
         assertTrue(isLiked, "user id not found in post likes list");
 
         logger.info("attempting to delete the post via API, expecting it not to display in the UI afterwards");
         VkRequests.wallDelete(postId);
-        assertFalse(myProfilePage.isPostDisplayed(postId), "post still displays - possibly failed to delete");
+        assertFalse(post.state().isDisplayed(), "post still displays - possibly failed to delete");
     }
 
     @BeforeMethod

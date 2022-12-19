@@ -16,19 +16,18 @@ public class Content {
     private Attachment attachment;
 
     public class Attachment {
-    @Getter
-    @JsonProperty
-    private String type;
-    @Getter
-    @JsonProperty
-    private int ownerId;
-    @Getter
-    @JsonProperty
-    private int mediaId;
+        @Getter
+        @JsonProperty
+        private String type;
+        @Getter
+        @JsonProperty
+        private int ownerId;
+        @Getter
+        @JsonProperty
+        private int mediaId;
 
-     public String getAsParameter(){
-        return String.format("%s%d_%d", getType(), getOwnerId(), getMediaId());
+        public String getAsParameter() {
+            return String.format("%s%d_%d", getType(), getOwnerId(), getMediaId());
+        }
     }
-}
-
 }

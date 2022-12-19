@@ -3,51 +3,55 @@
   "credentials": {
     "userId": null,
     "phone": null,
-    "password": null,
-    "token": null
-  },
-  "vkRequestsConfig": {
-    "vkRequestsVersion": 5.21
+    "password": null
   },
   "waits": {
     "myProfileClickable": {
       "seconds": 2,
-      "milliseconds": 0
+      "millis": 0
     },
     "acceptCookiesClickable": {
-       "seconds": 2,
-      "milliseconds": 0
+      "seconds": 2,
+      "millis": 0
     },
     "postDisplay": {
       "seconds": 5,
-      "milliseconds": 0
+      "millis": 0
     },
     "nextCommentClickable": {
       "seconds": 3,
-      "milliseconds": 0
-    },
-    "likeCountChange": {
-      "seconds": 5,
-      "milliseconds": 0
+      "millis": 0
     }
   },
   "vkRequests": {
-    "postOnWall": "https://api.vk.com/method/wall.post?&owner_id=%d&access_token=%s",
-    "commentPostOnWall": "https://api.vk.com/method/wall.createComment?post_id=%s&owner_id=%d&access_token=%s",
-    "editPost": "https://api.vk.com/method/wall.edit?post_id=%d&owner_id=%d&access_token=%s",
-    "getLikesList": "https://api.vk.com/method/likes.getList?type=%s&item_id=%d&owner_id=%d&access_token=%s",
-    "deletePost": "https://api.vk.com/method/wall.delete?post_id=%d&owner_id=%d&access_token=%s"
-  },
-  "postData": {
-    "message": "foo"
-  },
-  "postEditionData": {
-    "message": "bar",
-    "attachment": {
-      "type": "photo",
+    "urlBase": "https://api.vk.com/method/",
+    "methods": {
+      "wallPost": "wall.post?",
+      "wallEditPost": "wall.edit?post_id=%d",
+      "wallCreateComment": "wall.createComment?post_id=%d",
+      "wallDelete": "wall.delete?post_id=%d",
+      "likesIsLiked": "likes.isLiked?user_id=%d&type=%s&item_id=%d"
+    },
+    "sharedParams": {
       "ownerId": null,
-      "mediaId": null
+      "accessToken": null,
+      "version": "5.21"
     }
   },
-  "postCommentMessage": "foobar"
+  "content": {
+    "post": {
+      "message": "foo"
+    },
+    "postEdit": {
+      "message": "bar",
+      "attachment": {
+        "type": "photo",
+        "ownerId": null,
+        "mediaId": null
+      }
+    },
+    "comment": {
+      "message": "foobar"
+    }
+  }
 }

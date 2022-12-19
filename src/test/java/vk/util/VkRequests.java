@@ -1,8 +1,8 @@
 package vk.util;
 
-import aquality.selenium.browser.AqualityServices;
 import kong.unirest.HttpResponse;
 import vk.model.Content;
+import vk.model.VkResponse;
 
 import static vk.VkTest.getTestData;
 

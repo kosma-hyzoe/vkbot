@@ -13,7 +13,4 @@ public class Credentials {
     @Getter
     @JsonProperty
     private String password;
-    @Getter
-    @JsonProperty
-    private String token;
 }

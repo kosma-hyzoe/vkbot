@@ -27,6 +27,5 @@ public class SignInForm extends Form {
         signInButton.click();
         passwordInputField.clearAndType(credentials.getPassword());
         continueButton.click();
-
     }
 }

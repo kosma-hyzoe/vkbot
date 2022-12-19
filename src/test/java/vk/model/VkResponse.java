@@ -1,4 +1,4 @@
-package vk.util;
+package vk.model;
 
 import aquality.selenium.browser.AqualityServices;
 import com.fasterxml.jackson.databind.JsonNode;

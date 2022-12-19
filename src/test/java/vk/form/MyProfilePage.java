@@ -30,109 +30,12 @@ public class MyProfilePage extends Form {
         try {
             AqualityServices.getConditionalWait().waitForTrue(() -> acceptCookies.state().isClickable(),
                     Duration.ofSeconds(getTestData().get("waits").get("acceptCookiesClickable").get("seconds").asInt()),
-                    Duration.ofMillis(getTestData().get("waits").get("acceptCookiesClickable").get("milliseconds").asInt()),
+                    Duration.ofMillis(getTestData().get("waits").get("acceptCookiesClickable").get("millis").asInt()),
                     "The 'Accept' cookies element should be clickable");
         } catch (TimeoutException e) {
             AqualityServices.getLogger().warn("Accept' cookies element not clickable - skipping...");
             return;
         }
         acceptCookies.click();
-    }
-
-    public boolean isPostDisplayed(int postId){
-        String postElementId = String.format("post%d_%d", ownerId, postId);
-        ILabel post = AqualityServices.getElementFactory().getLabel(By.id(postElementId), "post @ id=" + postId);
-
-        return post.state().isDisplayed();
-    }
-
-    public boolean isPostDisplayed(int postId, Content content) {
-        if (content.getAttachment() == null && content.getMessage() == null) {
-            AqualityServices.getLogger().warn("empty post fields when checking if its displayed - returning false...");
-            return false;
-        }
-        if (content.getMessage() != null) {
-            String rawXpath = "//div[@id='wpt%d_%d']/div[text()='%s']";
-            String xpath = String.format(rawXpath, ownerId, postId, content.getMessage());
-            ITextBox postMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(xpath),
-                    "post message: '" + content.getMessage() + "' @ id=" + postId);
-            try {
-                AqualityServices.getConditionalWait().waitForTrue(() -> postMessage.state().isDisplayed(),
-                        Duration.ofSeconds(getTestData().get("waits").get("postDisplay").get("seconds").asInt()),
-                        Duration.ofMillis(getTestData().get("waits").get("postDisplay").get("milliseconds").asInt()),
-                        "there should be displayed a post message: " + content.getMessage());
-            } catch (TimeoutException e) {
-                AqualityServices.getLogger().info("timeout: failed to display the message within the post");
-                return false;
-            }
-        }
-        if (content.getAttachment() != null) {
-            if (!Objects.equals(content.getAttachment().getType(), "photo")) {
-                AqualityServices.getLogger().error("unsupported attachment type");
-                return false;
-            }
-
-            String rawXpath = "//div[@id='wpt%d_%d']/div/a[@href='/photo%d_%d']";
-            String xpath = String.format(rawXpath, ownerId, postId, content.getAttachment().getOwnerId(),
-                    content.getAttachment().getMediaId());
-            ILabel postAttachment = AqualityServices.getElementFactory().getLabel(By.xpath(xpath),
-                    "post attachment with request parameter: " + content.getAttachment().getAsParameter());
-            try {
-                AqualityServices.getConditionalWait().waitForTrue(() -> postAttachment.state().isDisplayed(),
-                        Duration.ofSeconds(getTestData().get("waits").get("postDisplay").get("seconds").asInt()),
-                        Duration.ofMillis(getTestData().get("waits").get("postDisplay").get("milliseconds").asInt()),
-                        "a post attachment should display");
-            } catch (TimeoutException e) {
-                AqualityServices.getLogger().info("timeout: failed to display the attachment of post");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void showNextCommentOnPost(int postId) {
-        String xpath = String.format("//div[@id='post%d_%d']//a[span[@class='js-replies_next_label']]", ownerId, postId);
-        IButton showNextComment = AqualityServices.getElementFactory().getButton(By.xpath(xpath),
-                "'Show next comment' clickable span");
-        try {
-            AqualityServices.getConditionalWait().waitForTrue(() -> showNextComment.state().isClickable(),
-                    Duration.ofSeconds(getTestData().get("waits").get("nextCommentClickable").get("seconds").asInt()),
-                    Duration.ofMillis(getTestData().get("waits").get("nextCommentClickable").get("milliseconds").asInt()),
-                    "'Show next comment' element should be clickable under given post");
-        } catch (TimeoutException e) {
-            AqualityServices.getLogger().warn("timeout: 'Show next comment' is not clickable - skipping...");
-            return;
-        }
-        showNextComment.click();
-    }
-
-    public Boolean isCommentMessageDisplayed(int postId, Content content) {
-        if (content.getMessage() == null) {
-            AqualityServices.getLogger().warn("empty message field  - returning false");
-            return false;
-        }
-
-        String rawXpath = "//div[@id='post%d_%d' and @data-answering-id='%d']//div[@class='wall_reply_text' and text()='%s']";
-        String xpath = String.format(rawXpath, ownerId, postId, ownerId, content.getMessage());
-        ITextBox commentMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(xpath), "comment message");
-        try {
-            AqualityServices.getConditionalWait().waitForTrue(() -> commentMessage.state().isDisplayed(),
-                    Duration.ofSeconds(getTestData().get("waits").get("postDisplay").get("seconds").asInt()),
-                    Duration.ofMillis(getTestData().get("waits").get("postDisplay").get("milliseconds").asInt()),
-                    "there should be displayed a comment with a matching message");
-        } catch (TimeoutException e) {
-            AqualityServices.getLogger().info("timeout: failed to display the comment message");
-            return false;
-        }
-        return true;
-    }
-
-    public void likePost(int postId) {
-        String rawXpath = "//div[@id='post%d_%d']//div[@class='like_btns']/div[1]";
-        String xpath = String.format(rawXpath, ownerId, postId);
-        ILabel likeButton = AqualityServices.getElementFactory().getLabel(By.xpath(xpath),
-                "like button under post @ id=" + postId);
-
-        likeButton.click();
     }
 }

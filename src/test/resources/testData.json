@@ -6,20 +6,16 @@
     "password": null
   },
   "waits": {
-    "myProfileClickable": {
+    "default": {
       "seconds": 2,
       "millis": 0
     },
-    "acceptCookiesClickable": {
-      "seconds": 2,
-      "millis": 0
+    "short": {
+      "seconds": 0,
+      "millis": 500
     },
-    "postDisplay": {
+    "long": {
       "seconds": 5,
-      "millis": 0
-    },
-    "nextCommentClickable": {
-      "seconds": 3,
       "millis": 0
     }
   },

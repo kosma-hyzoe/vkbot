@@ -4,19 +4,18 @@ import kong.unirest.HttpResponse;
 import vk.model.Content;
 import vk.model.VkResponse;
 
-import static vk.VkTest.getTestData;
+import static vk.test.VkTest.getTestData;
 
 public class VkRequests {
-    private VkRequests() {
-    }
+    private VkRequests() {}
 
-    private static String getRequest(String methodName, Content content){
+    private static String getRequest(String methodName, Content content) {
         StringBuilder requestBuilder = new StringBuilder();
 
         requestBuilder.append(getTestData().get("vkRequests").get("urlBase").asText());
         requestBuilder.append(getTestData().get("vkRequests").get("methods").get(methodName).asText());
 
-        if (content != null){
+        if (content != null) {
             if (content.getMessage() != null) {
                 requestBuilder.append("&message=").append(content.getMessage());
             }

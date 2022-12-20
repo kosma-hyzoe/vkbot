@@ -5,10 +5,9 @@ import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
 
-import java.time.Duration;
-import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 
-import static vk.VkTest.getTestData;
+import static vk.util.ConditionalWaits.waitForTrue;
 
 public class FeedPage extends Form {
     private static final ILink myProfile = AqualityServices.getElementFactory().getLink(
@@ -18,15 +17,9 @@ public class FeedPage extends Form {
         super(By.id("side_bar_inner"), "Feed");
     }
 
-    public void goToMyProfile(){
-        try {
-                AqualityServices.getConditionalWait().waitForTrue(() -> myProfile.state().isClickable(),
-                        Duration.ofSeconds(getTestData().get("waits").get("myProfileClickable").get("seconds").asInt()),
-                        Duration.ofMillis(getTestData().get("waits").get("myProfileClickable").get("millis").asInt()),
-                        "'My profile' link should be clickable");
-            } catch (TimeoutException e) {
-                AqualityServices.getLogger().error("timeout: 'My profile' is still not clickable");
-            }
+    public void goToMyProfile() {
+        BooleanSupplier isMyProfileLinkClickable = () -> myProfile.state().isClickable();
+        waitForTrue(isMyProfileLinkClickable, "is 'My profile' link clickable");
         myProfile.click();
     }
 }

@@ -1,37 +1,22 @@
-package vk;
+package vk.test;
 
-import aquality.selenium.browser.AqualityServices;
-import aquality.selenium.browser.Browser;
-import aquality.selenium.core.logging.Logger;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.annotations.*;
 import vk.form.FeedPage;
 import vk.form.MyProfilePage;
 import vk.form.PostForm;
 import vk.form.SignInForm;
 import vk.model.Content;
-import vk.model.Credentials;
-import vk.util.RestApiRequests;
 import vk.util.VkRequests;
 import vk.model.VkResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.function.BooleanSupplier;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static vk.util.ConditionalWaits.waitForTrue;
 import static vk.util.Serialization.deserialize;
-import static vk.util.Serialization.getJsonNode;
 
-public class VkTest {
-    public static final Logger logger = AqualityServices.getLogger();
-    private static String testData;
-    private static Browser browser;
-    private static Credentials credentials;
-
-    public static JsonNode getTestData() {
-        return getJsonNode(testData);
-    }
+public class VkTest extends BaseTest {
 
     @Test
     public void myProfileAdministration() {
@@ -45,7 +30,7 @@ public class VkTest {
 
         logger.info("opening the 'My profile' page, closing cookies if necessary");
         feed.goToMyProfile();
-        MyProfilePage myProfilePage = new MyProfilePage(credentials.getUserId());
+        MyProfilePage myProfilePage = new MyProfilePage();
         myProfilePage.acceptCookies();
 
         Content postContent = deserialize(getTestData().get("content").get("post").toString(), Content.class);
@@ -54,7 +39,8 @@ public class VkTest {
         VkResponse wallPostResponse = VkRequests.wallPost(postContent);
         int postId = wallPostResponse.getBody("post");
         PostForm post = new PostForm(credentials.getUserId(), postId);
-        assertTrue(post.state().isDisplayed(), "failed to display the post");
+        boolean isPostDisplayed = waitForTrue(() -> post.state().isDisplayed(), "is post displayed");
+        assertTrue(isPostDisplayed, "failed to display the post");
 
         Content postEditContent = deserialize(getTestData().get("content").get("postEdit").toString(), Content.class);
 
@@ -78,26 +64,7 @@ public class VkTest {
 
         logger.info("attempting to delete the post via API, expecting it not to display in the UI afterwards");
         VkRequests.wallDelete(postId);
-        assertFalse(post.state().isDisplayed(), "post still displays - possibly failed to delete");
-    }
-
-    @BeforeMethod
-    public void setUp() {
-        try {
-            InputStream testDataInputStream = getClass().getClassLoader().getResourceAsStream("testData.local.json");
-            assert testDataInputStream != null;
-            testData = new String(testDataInputStream.readAllBytes());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-        browser = AqualityServices.getBrowser();
-        browser.maximize();
-        credentials = deserialize(getTestData().get("credentials").toString(), Credentials.class);
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        RestApiRequests.shutDownUnirest();
-        browser.quit();
+        boolean isNotPostDisplayed = waitForTrue(() -> !post.state().isDisplayed(), "is not post displayed");
+        assertTrue(isNotPostDisplayed, "post still displays - possibly failed to delete");
     }
 }

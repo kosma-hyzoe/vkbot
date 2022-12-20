@@ -1,11 +1,11 @@
 package vk.model;
 
-import aquality.selenium.browser.AqualityServices;
 import com.fasterxml.jackson.databind.JsonNode;
 import kong.unirest.HttpResponse;
 import lombok.Getter;
 
 import static vk.util.Serialization.getJsonNode;
+import static aquality.selenium.browser.AqualityServices.getLogger;
 
 public class VkResponse {
     @Getter
@@ -29,7 +29,7 @@ public class VkResponse {
         } else {
             int errorCode = body.get("error").get("error_code").asInt();
             String errorMessage = body.get("error").get("error_msg").asText();
-            AqualityServices.getLogger().error("request error " + errorCode + " - " + errorMessage);
+            getLogger().error("request error " + errorCode + " - " + errorMessage);
             this.body = body.get("error").toString();
         }
 

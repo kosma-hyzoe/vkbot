@@ -19,6 +19,13 @@ public class PostForm extends Form {
     private final int ownerId;
     @Getter
     private final int id;
+    private final String messageXpath =  "//div[@id='wpt%d_%d']/div[text()='%s']";
+    private final String attachmentXpath  = "//div[@id='wpt%d_%d']/div/a[@href='/photo%d_%d']";
+    private final String showNextCommentButtonXpath = "//div[@id='post%d_%d']//a[span[@class='js-replies_next_label']]";
+    private final String likeButtonXpath = "//div[@id='post%d_%d']//div[@data-section-ref='reactions-button-container']";
+    private final String commentMessageXpath = "//div[@id='post%d_%d' and @data-answering-id='%d']" +
+                "//div[@class='wall_reply_text' and text()='%s']";
+
 
     public PostForm(int ownerId, int id) {
         super(By.id(String.format("post%d_%d", ownerId, id)), "post element @ id=" + id);
@@ -32,8 +39,7 @@ public class PostForm extends Form {
             return false;
         }
         if (content.getMessage() != null) {
-            String xpath = "//div[@id='wpt%d_%d']/div[text()='%s']";
-            String formattedXpath = String.format(xpath, ownerId, id, content.getMessage());
+            String formattedXpath = String.format(messageXpath, ownerId, id, content.getMessage());
             ITextBox postMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(formattedXpath),
                     "post message: '" + content.getMessage() + "' @ id=" + id);
 
@@ -46,8 +52,7 @@ public class PostForm extends Form {
                 return false;
             }
 
-            String xpath = "//div[@id='wpt%d_%d']/div/a[@href='/photo%d_%d']";
-            String formattedXpath = String.format(xpath, ownerId, id, content.getAttachment().getOwnerId(),
+            String formattedXpath = String.format(attachmentXpath, ownerId, id, content.getAttachment().getOwnerId(),
                     content.getAttachment().getMediaId());
             ILabel postAttachment = AqualityServices.getElementFactory().getLabel(By.xpath(formattedXpath),
                     "post attachment with request parameter: " + content.getAttachment().getAsParameter());
@@ -59,8 +64,8 @@ public class PostForm extends Form {
     }
 
     public void showNextComment() {
-        String xpath = String.format("//div[@id='post%d_%d']//a[span[@class='js-replies_next_label']]", ownerId, id);
-        IButton showNextComment = AqualityServices.getElementFactory().getButton(By.xpath(xpath),
+        String formattedXpath = String.format(showNextCommentButtonXpath, ownerId, id);
+        IButton showNextComment = AqualityServices.getElementFactory().getButton(By.xpath(formattedXpath),
                 "'Show next comment' clickable span");
 
         BooleanSupplier isShowNextCommentClickable = () -> showNextComment.state().isClickable();
@@ -69,23 +74,21 @@ public class PostForm extends Form {
         showNextComment.click();
     }
 
+    public void likePost() {
+        String formattedXpath = String.format(likeButtonXpath, ownerId, id);
+        ILabel likeButton = AqualityServices.getElementFactory().getLabel(By.xpath(formattedXpath),
+                "like button under post @ id=" + id);
+
+        likeButton.click();
+    }
+
     public boolean isCommentMessageDisplayed(int commentId, String message) {
-        String xpath = String.format("//div[@id='post%d_%d' and @data-answering-id='%d']" +
-                "//div[@class='wall_reply_text' and text()='%s']", ownerId, commentId, ownerId, message);
-        ITextBox commentMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(xpath),
+        String formattedXpath = String.format(commentMessageXpath, ownerId, commentId, ownerId, message);
+        ITextBox commentMessage = AqualityServices.getElementFactory().getTextBox(By.xpath(formattedXpath),
                 "comment message @ id=" + id);
 
         BooleanSupplier isCommentMessageDisplayed = () -> commentMessage.state().isDisplayed();
         ConditionalWaits.waitForTrue(isCommentMessageDisplayed, "is comment message displayed");
         return true;
-    }
-
-    public void likePost() {
-        String xpath = "//div[@id='post%d_%d']//div[@data-section-ref='reactions-button-container']";
-        String formattedXpath = String.format(xpath, ownerId, id);
-        ILabel likeButton = AqualityServices.getElementFactory().getLabel(By.xpath(formattedXpath),
-                "like button under post @ id=" + id);
-
-        likeButton.click();
     }
 }

@@ -42,6 +42,7 @@ public class VkTest extends BaseTest {
         boolean isPostDisplayed = waitForTrue(() -> post.state().isDisplayed(), "is post displayed");
         assertTrue(isPostDisplayed, "failed to display the post");
 
+
         Content postEditContent = deserialize(getTestData().get("content").get("postEdit").toString(), Content.class);
 
         logger.info("attempting to edit the post via API, expecting the changes to be displayed in the UI");
